@@ -1,10 +1,22 @@
 .app-container {
-  background-color: #000000;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: center;
+  background-color: #000000;
+  font-family: 'Roboto';
+  min-height: 100vh;
 }
 
-.loader-cls {
-  align-self: center;
+.error-message {
+  text-align: center;
+  color: #00e7ff;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 4px;
+}
+
+@media (min-width: 576px) {
+  .error-message {
+    font-size: 48px;
+  }
 }

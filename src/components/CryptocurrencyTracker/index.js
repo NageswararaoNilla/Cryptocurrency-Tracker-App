@@ -1,48 +1,56 @@
 import {Component} from 'react'
 import Loader from 'react-loader-spinner'
 
-import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css'
-
 import CryptocurrenciesList from '../CryptocurrenciesList'
 
 import './index.css'
 
-class CryptocurrencyTracker extends Component {
-  state = {cryptoList: [], isLoading: true}
+const apiUrl = 'https://apis.ccbp.in/crypto-currency-converter'
 
-  componentDidMount() {
-    this.getFetchData()
+class CryptocurrencyTracker extends Component {
+  state = {
+    cryptocurrenciesData: [],
+    isLoading: true,
   }
 
-  getFetchData = async () => {
-    const response = await fetch(
-      'https://apis.ccbp.in/crypto-currency-converter',
-    )
-    const dataList = await response.json()
-    const updateData = dataList.map(each => ({
-      currencyName: each.currency_name,
-      usdValue: each.usd_value,
-      euroValue: each.euro_value,
-      id: each.id,
-      currencyLogo: each.currency_logo,
-    }))
+  componentDidMount() {
+    this.getCryptocurrencies()
+  }
+
+  getCryptocurrencies = async () => {
+    const response = await fetch(apiUrl)
+    const fetchedData = await response.json()
+
     this.setState({
-      cryptoList: updateData,
+      cryptocurrenciesData: fetchedData.map(eachCryptocurrency => ({
+        id: eachCryptocurrency.id,
+        currencyLogoUrl: eachCryptocurrency.currency_logo,
+        currencyName: eachCryptocurrency.currency_name,
+        usdValue: eachCryptocurrency.usd_value,
+        euroValue: eachCryptocurrency.euro_value,
+      })),
       isLoading: false,
     })
   }
 
+  renderCryptocurrenciesList = () => {
+    const {cryptocurrenciesData} = this.state
+
+    return <CryptocurrenciesList cryptocurrenciesData={cryptocurrenciesData} />
+  }
+
+  renderLoader = () => (
+    <div data-testid="loader">
+      <Loader type="Rings" color="#ffffff" height={80} width={80} />
+    </div>
+  )
+
   render() {
-    const {cryptoList, isLoading} = this.state
+    const {isLoading} = this.state
+
     return (
       <div className="app-container">
-        {isLoading ? (
-          <div className="loader-cls" data-testid="loader">
-            <Loader type="Rings" color="#ffffff" height={80} width={80} />
-          </div>
-        ) : (
-          <CryptocurrenciesList cryptoList={cryptoList} />
-        )}
+        {isLoading ? this.renderLoader() : this.renderCryptocurrenciesList()}
       </div>
     )
   }
